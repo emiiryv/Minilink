@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minilink</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #262734; /* from dark navy */
+      --bg-secondary: #73312E; /* from rich brown */
+      --accent: #E07A5F; /* neutral accent */
+      --accent-hover: #c7604a; /* darker accent for hover */
+      --text: #fff8f0;
+      --text-muted: #cbaaa0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(-45deg, #73312E, #D99137, #B4645C, #262734);
+      background-size: 400% 400%;
+      animation: gradientBG 8s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    header img.logo {
+      width: 96px;
+      height: auto;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      color: #ffffff;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-top: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      background-color: var(--bg-secondary);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #2e3440;
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .card ul {
+      list-style: none;
+    }
+
+    .card ul li::before {
+      content: '⟶';
+      margin-right: 8px;
+      color: var(--accent);
+    }
+
+    .tech-logos {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .tech-logos img {
+      height: 40px;
+      background-color: #fff;
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 24px;
+      border-radius: 32px;
+      font-weight: 600;
+      border: none;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .btn-github {
+      background-color: var(--accent);
+      color: #0f141b;
+    }
+
+    .btn-github:hover {
+      background-color: var(--accent-hover);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      margin-top: 60px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img class="logo" src="logo.png" alt="Minilink Logo">
+      <h1>Minilink</h1>
+      <p>Kısalt, paylaş, takip et. Modern ve hafif URL kısaltma servisi.</p>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Özellikler</h2>
+        <ul>
+          <li>URL kısaltma</li>
+          <li>Tıklama istatistikleri</li>
+          <li>QR kod üretimi</li>
+          <li>Geçici / özel bağlantılar</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Kullanılan Teknolojiler</h2>
+        <div class="tech-logos">
+          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" alt="Node.js">
+          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="JavaScript">
+          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original.svg" alt="PostgreSQL">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" alt="HTML5">
+          <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg" alt="Express.js">
+        </div>
+      </div>
+    </div>
+
+    <div class="card actions">
+      <h2>Kaynak Kodu</h2>
+      <p>Projeye GitHub üzerinden erişebilirsiniz.</p>
+      <a class="btn btn-github" href="https://github.com/kullaniciadi/minilink" target="_blank">GitHub'da Görüntüle</a>
+    </div>
+
+    <footer>
+      &copy; 2025 Minilink | Developed by Emir Yavuz
+    </footer>
+  </div>
+</body>
+</html>
