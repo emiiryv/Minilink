@@ -1,6 +1,3 @@
-
-
-
 document.getElementById('shorten-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -11,7 +8,8 @@ document.getElementById('shorten-form').addEventListener('submit', async (e) => 
     const response = await fetch('http://localhost:3001/api/links', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify({ originalUrl })
     });

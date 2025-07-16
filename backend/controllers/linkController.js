@@ -1,7 +1,17 @@
 const {
   createShortLinkService,
   getOriginalUrlService,
+  getUserLinks,
 } = require('../services/linkService');
+// Kullanıcının linklerini getir
+async function getMyLinks(req, res, next) {
+  try {
+    const links = await getUserLinks(req.user.id);
+    res.json(links);
+  } catch (err) {
+    next(err);
+  }
+}
 
 // Yeni kısa link oluşturma
 async function shortenUrl(req, res) {
@@ -12,7 +22,8 @@ async function shortenUrl(req, res) {
   }
 
   try {
-    const newLink = await createShortLinkService(originalUrl);
+    const userId = req.user?.id || null;
+    const newLink = await createShortLinkService(originalUrl, userId);
     res.status(201).json(newLink);
   } catch (err) {
     console.error(err);
@@ -40,4 +51,5 @@ async function redirectToOriginalUrl(req, res) {
 module.exports = {
   shortenUrl,
   redirectToOriginalUrl,
+  getMyLinks,
 };
