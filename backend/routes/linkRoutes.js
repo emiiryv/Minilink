@@ -4,6 +4,7 @@ const {
   shortenUrl,
   redirectToOriginalUrl,
   getMyLinks,
+  deleteLink,
 } = require('../controllers/linkController');
 const authenticateToken = require('../middleware/auth');
 
@@ -13,7 +14,7 @@ router.post('/', authenticateToken, shortenUrl);
 // Kullanıcının linklerini getir (korumalı)
 router.get('/me', authenticateToken, getMyLinks);
 
-// Kısa koda göre yönlendirme
-router.get('/:shortCode', redirectToOriginalUrl);
+// Link silme (korumalı)
+router.delete('/:id', authenticateToken, deleteLink);
 
 module.exports = router;

@@ -1,3 +1,5 @@
+import apiRequest from './api.js';
+
 document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -5,22 +7,12 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
   const password = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://localhost:3001/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    const data = await apiRequest('/auth/register', 'POST', { username, password });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      alert('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz.');
-      window.location.href = 'login.html';
-    } else {
-      alert(data.message || 'Kayıt sırasında bir hata oluştu.');
-    }
+    alert('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz.');
+    window.location.href = 'login.html';
   } catch (error) {
-    alert('Sunucuya bağlanılamadı.');
+    alert(error.message || 'Kayıt sırasında bir hata oluştu.');
     console.error(error);
   }
 });

@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  username   String    @unique @db.VarChar(50)
+  password   String
+  is_admin   Boolean?  @default(false)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  links      Link[]    @relation("UserLinks")
+
+  @@map("users")
+}
+
+model Link {
+  id           Int       @id @default(autoincrement())
+  original_url String
+  short_code   String    @unique @db.VarChar(10)
+  click_count  Int?      @default(0)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  user_id      Int?
+  user         User?     @relation("UserLinks", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("links")
+}

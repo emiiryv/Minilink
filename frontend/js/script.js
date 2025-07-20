@@ -1,3 +1,13 @@
+import apiRequest from './api.js';
+
+// Eğer kullanıcı giriş yapmamışsa login sayfasına yönlendir
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'login.html';
+  }
+});
+
 document.getElementById('shorten-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -5,21 +15,8 @@ document.getElementById('shorten-form').addEventListener('submit', async (e) => 
   const resultDiv = document.getElementById('result');
 
   try {
-    const response = await fetch('http://localhost:3001/api/links', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify({ originalUrl })
-    });
-
-    if (!response.ok) {
-      throw new Error('Bir hata oluştu');
-    }
-
-    const data = await response.json();
-    const shortUrl = `http://localhost:3001/api/links/${data.short_code}`;
+    const data = await apiRequest('/links', 'POST', { originalUrl });
+    const shortUrl = data.short_url;
 
     resultDiv.innerHTML = `
       <p><strong>Kısa Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>

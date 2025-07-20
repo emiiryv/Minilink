@@ -1,37 +1,55 @@
-const db = require('../db/db');
+const prisma = require('../prismaClient');
 
 // Yeni kısa link ekleme
 async function createShortLink(originalUrl, shortCode, userId) {
-  const result = await db.query(
-    'INSERT INTO links (original_url, short_code, user_id) VALUES ($1, $2, $3) RETURNING *',
-    [originalUrl, shortCode, userId]
-  );
-  return result.rows[0];
+  return await prisma.link.create({
+    data: {
+      original_url: originalUrl,
+      short_code: shortCode,
+      user_id: userId
+    }
+  });
 }
 
 // Kısa koda göre link bulma
 async function getLinkByShortCode(shortCode) {
-  const result = await db.query(
-    'SELECT * FROM links WHERE short_code = $1',
-    [shortCode]
-  );
-  return result.rows[0];
+  return await prisma.link.findFirst({
+    where: {
+      short_code: shortCode
+    }
+  });
 }
 
 // Tıklama sayısını artırma
 async function incrementClickCount(shortCode) {
-  await db.query(
-    'UPDATE links SET click_count = click_count + 1 WHERE short_code = $1',
-    [shortCode]
-  );
+  await prisma.link.update({
+    where: {
+      short_code: shortCode
+    },
+    data: {
+      click_count: {
+        increment: 1
+      }
+    }
+  });
 }
 
 async function getLinksByUserId(userId) {
-  const result = await db.query(
-    'SELECT * FROM links WHERE user_id = $1',
-    [userId]
-  );
-  return result.rows;
+  return await prisma.link.findMany({
+    where: {
+      user_id: userId
+    }
+  });
+}
+
+async function deleteLink(linkId, userId) {
+  const deleted = await prisma.link.deleteMany({
+    where: {
+      id: parseInt(linkId, 10),
+      user_id: userId
+    }
+  });
+  return deleted.count;
 }
 
 module.exports = {
@@ -39,4 +57,5 @@ module.exports = {
   getLinkByShortCode,
   incrementClickCount,
   getLinksByUserId,
+  deleteLink,
 };

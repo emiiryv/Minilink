@@ -1,3 +1,5 @@
+require('dotenv').config();
+const { deleteLinkById } = require('../services/linkService');
 const {
   createShortLinkService,
   getOriginalUrlService,
@@ -24,7 +26,8 @@ async function shortenUrl(req, res) {
   try {
     const userId = req.user?.id || null;
     const newLink = await createShortLinkService(originalUrl, userId);
-    res.status(201).json(newLink);
+    const shortUrl = `${process.env.BASE_URL}/${newLink.short_code}`;
+    res.status(201).json({ ...newLink, short_url: shortUrl });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Veritabanı hatası' });
@@ -48,8 +51,27 @@ async function redirectToOriginalUrl(req, res) {
   }
 }
 
+// Link silme
+async function deleteLink(req, res) {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const result = await deleteLinkById(id, userId);
+    if (result === 0) {
+      return res.status(403).json({ error: 'Bu linki silme yetkiniz yok' });
+    }
+
+    res.status(200).json({ message: 'Link silindi' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Silme işlemi başarısız' });
+  }
+}
+
 module.exports = {
   shortenUrl,
   redirectToOriginalUrl,
   getMyLinks,
+  deleteLink,
 };

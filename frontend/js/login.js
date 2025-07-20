@@ -1,5 +1,4 @@
-
-
+import apiRequest from './api.js';
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -8,18 +7,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://localhost:3001/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    const data = await apiRequest('http://localhost:3001/api/auth/login', 'POST', { username, password });
 
-    const data = await response.json();
-
-    if (response.ok && data.token) {
+    if (data.token) {
       localStorage.setItem('token', data.token);
       alert('Giriş başarılı! Yönlendiriliyorsunuz...');
-      window.location.href = 'dashboard.html'; // veya ana sayfa
+      window.location.href = 'dashboard.html';
     } else {
       alert(data.message || 'Giriş başarısız.');
     }

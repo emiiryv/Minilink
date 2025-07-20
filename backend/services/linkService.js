@@ -3,6 +3,7 @@ const {
   getLinkByShortCode,
   incrementClickCount,
   getLinksByUserId,
+  deleteLink
 } = require('../models/linkModel');
 const generateShortCode = require('../utils/generateShortCode');
 
@@ -22,11 +23,20 @@ async function getOriginalUrlService(shortCode) {
 }
 
 async function getUserLinks(userId) {
-  return await getLinksByUserId(userId);
+  const links = await getLinksByUserId(userId);
+  return links.map(link => ({
+    ...link,
+    short_url: `http://localhost:3001/${link.short_code}`,
+  }));
+}
+
+async function deleteLinkById(linkId, userId) {
+  return await deleteLink(linkId, userId);
 }
 
 module.exports = {
   createShortLinkService,
   getOriginalUrlService,
   getUserLinks,
+  deleteLinkById,
 };

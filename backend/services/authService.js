@@ -1,24 +1,45 @@
-
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { createUser, findUserByUsername } = require('../models/userModel');
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
+// JWT imzalama anahtarı (çevresel değişkenden alınır, yoksa varsayılan kullanılır)
 const JWT_SECRET = process.env.JWT_SECRET || 'gizli-anahtar';
 
+/**
+ * Yeni kullanıcı kaydı oluşturur.
+ * @param {string} username - Kullanıcının kullanıcı adı.
+ * @param {string} password - Kullanıcının şifresi.
+ * @returns {Promise<object>} Oluşturulan kullanıcı nesnesi.
+ */
 async function registerUser(username, password) {
-  const existingUser = await findUserByUsername(username);
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
   if (existingUser) {
     throw { status: 400, message: 'Kullanıcı adı zaten kullanılıyor.' };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await createUser(username, hashedPassword);
+  const user = await prisma.user.create({
+    data: {
+      username,
+      password: hashedPassword,
+    },
+  });
   return user;
 }
 
+/**
+ * Kullanıcı girişi yapar ve JWT üretir.
+ * @param {string} username - Kullanıcının kullanıcı adı.
+ * @param {string} password - Kullanıcının şifresi.
+ * @returns {Promise<object>} JWT içeren nesne.
+ */
 async function loginUser(username, password) {
-  const user = await findUserByUsername(username);
+  const user = await prisma.user.findUnique({
+    where: { username },
+  });
   if (!user) {
     throw { status: 401, message: 'Geçersiz kullanıcı adı veya şifre.' };
   }
