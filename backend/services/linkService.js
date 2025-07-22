@@ -7,9 +7,9 @@ const {
 } = require('../models/linkModel');
 const generateShortCode = require('../utils/generateShortCode');
 
-async function createShortLinkService(originalUrl, userId) {
+async function createShortLinkService(originalUrl, userId, expiresAt) {
   const shortCode = generateShortCode();
-  const newLink = await createShortLink(originalUrl, shortCode, userId);
+  const newLink = await createShortLink(originalUrl, shortCode, userId, expiresAt);
   return newLink;
 }
 
@@ -39,4 +39,5 @@ module.exports = {
   getOriginalUrlService,
   getUserLinks,
   deleteLinkById,
+  incrementClickCount,
 };

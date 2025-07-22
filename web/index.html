@@ -11,6 +11,16 @@
     <h1>🔗 Minilink</h1>
     <form id="shorten-form">
       <input type="url" id="original-url" placeholder="URL yapıştır..." required />
+      <div style="margin-top: 10px;">
+        <label>
+          <input type="checkbox" id="set-expiry" />
+          Süreli link olsun
+        </label>
+      </div>
+      <div style="margin-top: 10px; display: none;" id="expiry-date-container">
+        <label for="expires-at">Bitiş Tarihi:</label>
+        <input type="datetime-local" id="expires-at" name="expires_at" />
+      </div>
       <button type="submit">Kısalt</button>
     </form>
     <div id="result" style="margin-top: 20px;"></div>
@@ -22,5 +32,16 @@
   </div>
 
   <script type="module" src="js/script.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('set-expiry');
+    const dateContainer = document.getElementById('expiry-date-container');
+
+    checkbox.addEventListener('change', () => {
+      dateContainer.style.display = checkbox.checked ? 'block' : 'none';
+    });
+  });
+</script>
 </body>
 </html>

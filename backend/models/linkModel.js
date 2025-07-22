@@ -1,12 +1,13 @@
 const prisma = require('../prismaClient');
 
 // Yeni kısa link ekleme
-async function createShortLink(originalUrl, shortCode, userId) {
+async function createShortLink(originalUrl, shortCode, userId, expiresAt) {
   return await prisma.link.create({
     data: {
       original_url: originalUrl,
       short_code: shortCode,
-      user_id: userId
+      user_id: userId,
+      expires_at: expiresAt ? new Date(expiresAt) : null
     }
   });
 }

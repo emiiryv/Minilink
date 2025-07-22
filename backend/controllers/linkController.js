@@ -1,15 +1,23 @@
+const prisma = require('../prismaClient');
 require('dotenv').config();
 const { deleteLinkById } = require('../services/linkService');
 const {
   createShortLinkService,
   getOriginalUrlService,
   getUserLinks,
+  incrementClickCount,
 } = require('../services/linkService');
 // Kullanıcının linklerini getir
 async function getMyLinks(req, res, next) {
   try {
-    const links = await getUserLinks(req.user.id);
-    res.json(links);
+    const sortField = req.query.sort === 'click_count' ? 'click_count' : 'created_at';
+    const links = await prisma.link.findMany({
+      where: { user_id: req.user.id },
+      orderBy: {
+        [sortField]: 'desc',
+      },
+    });
+    res.status(200).json({ links });
   } catch (err) {
     next(err);
   }
@@ -17,7 +25,7 @@ async function getMyLinks(req, res, next) {
 
 // Yeni kısa link oluşturma
 async function shortenUrl(req, res) {
-  const { originalUrl } = req.body;
+  const { originalUrl, expires_at } = req.body;
 
   if (!originalUrl) {
     return res.status(400).json({ error: 'originalUrl is required' });
@@ -25,7 +33,7 @@ async function shortenUrl(req, res) {
 
   try {
     const userId = req.user?.id || null;
-    const newLink = await createShortLinkService(originalUrl, userId);
+    const newLink = await createShortLinkService(originalUrl, userId, expires_at);
     const shortUrl = `${process.env.BASE_URL}/${newLink.short_code}`;
     res.status(201).json({ ...newLink, short_url: shortUrl });
   } catch (err) {
@@ -39,12 +47,21 @@ async function redirectToOriginalUrl(req, res) {
   const { shortCode } = req.params;
 
   try {
-    const originalUrl = await getOriginalUrlService(shortCode);
-    if (!originalUrl) {
+    const link = await prisma.link.findUnique({
+      where: { short_code: shortCode },
+    });
+
+    if (!link) {
       return res.status(404).json({ error: 'Link bulunamadı' });
     }
 
-    res.redirect(originalUrl);
+    if (link.expires_at && new Date(link.expires_at) < new Date()) {
+      return res.status(410).json({ error: 'Bu linkin süresi dolmuştur.' });
+    }
+
+    await incrementClickCount(shortCode);
+
+    res.redirect(link.original_url);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Yönlendirme hatası' });

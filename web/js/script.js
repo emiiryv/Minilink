@@ -13,9 +13,17 @@ document.getElementById('shorten-form').addEventListener('submit', async (e) => 
 
   const originalUrl = document.getElementById('original-url').value;
   const resultDiv = document.getElementById('result');
+  const isExpirySet = document.getElementById('set-expiry').checked;
+  const expiresAt = document.getElementById('expires-at').value;
+
+  const payload = { originalUrl };
+
+  if (isExpirySet && expiresAt) {
+    payload.expires_at = expiresAt ? new Date(expiresAt).toISOString() : null;
+  }
 
   try {
-    const data = await apiRequest('/links', 'POST', { originalUrl });
+    const data = await apiRequest('/links', 'POST', payload);
     const shortUrl = data.short_url;
 
     resultDiv.innerHTML = `

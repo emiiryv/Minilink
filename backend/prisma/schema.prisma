@@ -26,6 +26,7 @@ model Link {
   created_at   DateTime? @default(now()) @db.Timestamp(6)
   user_id      Int?
   user         User?     @relation("UserLinks", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expires_at   DateTime? @db.Timestamp(6)
 
   @@map("links")
 }

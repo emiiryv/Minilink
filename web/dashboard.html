@@ -7,9 +7,16 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="container" style="padding-top: 70px;">
     <h2>Linklerim</h2>
-    <button onclick="logout()">Çıkış Yap</button>
+    <label for="sort-select">Sırala:</label>
+    <select id="sort-select">
+      <option value="created_at">En Yeni</option>
+      <option value="click_count">En Çok Tıklanan</option>
+    </select>
+    <div style="position: fixed; top: 10px; right: 20px; z-index: 1000;">
+      <button onclick="logout()">Çıkış Yap</button>
+    </div>
     <div id="link-list"></div>
     <p><a href="./index.html">Ana Sayfa</a></p>
   </div>
