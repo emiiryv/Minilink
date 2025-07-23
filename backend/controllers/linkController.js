@@ -7,6 +7,7 @@ const {
   getUserLinks,
   incrementClickCount,
 } = require('../services/linkService');
+const { getFromCache, setToCache } = require('../services/cacheService');
 // Kullanıcının linklerini getir
 async function getMyLinks(req, res, next) {
   try {
@@ -47,9 +48,17 @@ async function redirectToOriginalUrl(req, res) {
   const { shortCode } = req.params;
 
   try {
-    const link = await prisma.link.findUnique({
-      where: { short_code: shortCode },
-    });
+    let link = await getFromCache(shortCode);
+
+    if (!link) {
+      link = await prisma.link.findUnique({
+        where: { short_code: shortCode },
+      });
+
+      if (link) {
+        await setToCache(shortCode, link, 600); // 600 seconds = 10 minutes
+      }
+    }
 
     if (!link) {
       return res.status(404).json({ error: 'Link bulunamadı' });

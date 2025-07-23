@@ -6,7 +6,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node backend/server.js",
+    "start": "concurrently \"node backend/server.js\" \"node backend/cron/clickFlushJob.js\"",
     "dev": "nodemon backend/server.js"
   },
   "repository": {
@@ -30,9 +30,11 @@
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "redis": "^5.6.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "nodemon": "^3.1.10",
     "prisma": "^6.12.0"
   }

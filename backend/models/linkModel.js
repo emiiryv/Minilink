@@ -1,3 +1,4 @@
+const redisClient = require('../utils/cacheClient');
 const prisma = require('../prismaClient');
 
 // Yeni kısa link ekleme
@@ -23,16 +24,7 @@ async function getLinkByShortCode(shortCode) {
 
 // Tıklama sayısını artırma
 async function incrementClickCount(shortCode) {
-  await prisma.link.update({
-    where: {
-      short_code: shortCode
-    },
-    data: {
-      click_count: {
-        increment: 1
-      }
-    }
-  });
+  await redisClient.incr(`click:${shortCode}`);
 }
 
 async function getLinksByUserId(userId) {
