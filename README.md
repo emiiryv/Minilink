@@ -32,3 +32,81 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
 - **Geliştirme aracı:** nodemon  
 
 ---
+
+## ⚙️ Kurulum Adımları
+
+1. Reponun bir kopyasını alın:
+   ```bash
+   git clone https://github.com/emiiryv/Minilink.git
+   cd Minilink
+   ```
+
+2. Ortam değişkenlerini tanımlayın:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Örnek `.env` içeriği:
+   ```
+   DATABASE_URL="postgresql://postgres:admin123@localhost:5432/minilink"
+   JWT_SECRET="gizli-anahtar"
+   BASE_URL=http://localhost:3001
+   PORT=3001
+   ```
+
+3. Gerekli paketleri yükleyin:
+   ```bash
+   npm install
+   ```
+
+4. Veritabanını Prisma ile kurun:
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+5. Uygulamayı başlatın:
+   ```bash
+   npm run build
+   npm start
+   ```
+
+---
+
+## 🗃️ Veritabanı Yapısı
+
+**users tablosu:**
+- `id`: Otomatik artan kullanıcı ID'si  
+- `username`: Benzersiz kullanıcı adı  
+- `password`: Şifre (hashlenmiş)  
+- `is_admin`: Yönetici olup olmadığı (opsiyonel)  
+- `created_at`: Oluşturulma zamanı  
+- `links`: Kullanıcının oluşturduğu kısa linkler
+
+**links tablosu:**
+- `id`: Otomatik artan link ID'si  
+- `original_url`: Uzun orijinal bağlantı  
+- `short_code`: Kısaltılmış bağlantı kodu  
+- `click_count`: Bağlantıya yapılan toplam tıklama sayısı  
+- `created_at`: Link oluşturulma zamanı  
+- `user_id`: Linkin ait olduğu kullanıcı  
+- `expires_at`: Linkin geçerlilik bitiş tarihi (opsiyonel)
+
+---
+
+## 🧪 Örnek API Kullanımı
+
+Kısa link oluşturma (JWT gerektirir):
+```bash
+curl -X POST http://localhost:3001/api/links \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"originalUrl": "https://example.com"}'
+```
+
+---
+
+## 📎 Ek Notlar
+
+- Redis entegrasyonu kullanılarak `click_count` işlemleri optimize edilmiştir.
+- Uygulama TypeScript ile yazılmıştır.
+- `dist/` klasörüne derlenerek çalıştırılır.

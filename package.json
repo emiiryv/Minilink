@@ -1,14 +1,14 @@
 {
   "name": "minilink",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "backend/dist/server.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "start": "npm run build && concurrently \"node dist/backend/server.js\" \"node dist/backend/cron/clickFlushJob.js\"",
+    "start": "npm run build && concurrently \"node backend/dist/server.js\" \"node backend/dist/cron/clickFlushJob.js\"",
     "build": "tsc",
-    "dev": "nodemon backend/server.ts"
+    "dev": "nodemon backend/src/server.ts"
   },
   "repository": {
     "type": "git",
