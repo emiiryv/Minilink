@@ -48,7 +48,7 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
 
    Örnek `.env` içeriği:
    ```
-   DATABASE_URL="postgresql://postgres:admin123@localhost:5432/minilink"
+   DATABASE_URL="postgresql://username:password@localhost:5432/minilink"
    JWT_SECRET="gizli-anahtar"
    BASE_URL=http://localhost:3001
    PORT=3001
@@ -64,7 +64,21 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
    npx prisma migrate dev --name init
    ```
 
-5. Uygulamayı başlatın:
+5. Frontend arayüzünü başlatın:
+
+   Geliştirme ortamında frontend dosyalarını çalıştırmak için `serve` paketine ihtiyacınız vardır. Eğer global olarak kurulu değilse aşağıdaki komutla kurabilirsiniz:
+
+   ```bash
+   npm install -g serve
+   ```
+
+   Ardından frontend klasörünü başlatmak için:
+
+   ```bash
+   serve frontend
+   ```
+
+6. Uygulamayı başlatın:
    ```bash
    npm run build
    npm start
@@ -91,6 +105,27 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
 - `user_id`: Linkin ait olduğu kullanıcı  
 - `expires_at`: Linkin geçerlilik bitiş tarihi (opsiyonel)
 
+## **SQL ile elle kurulum yapmak isteyenler için:**
+
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  is_admin BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE links (
+  id SERIAL PRIMARY KEY,
+  original_url TEXT NOT NULL,
+  short_code VARCHAR(10) UNIQUE NOT NULL,
+  click_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id INTEGER REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  expires_at TIMESTAMP
+);
+```
 ---
 
 ## 🧪 Örnek API Kullanımı
