@@ -66,17 +66,20 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
 
 5. Frontend arayüzünü başlatın:
 
-   Geliştirme ortamında frontend dosyalarını çalıştırmak için `serve` paketine ihtiyacınız vardır. Eğer global olarak kurulu değilse aşağıdaki komutla kurabilirsiniz:
+   Frontend arayüzü `web/` klasörü altında yer almakta ve HTML/CSS/JavaScript dosyalarıyla statik olarak çalışmaktadır. Bu arayüzü test etmek için `serve` paketine ihtiyacınız vardır. Eğer global olarak kurulu değilse aşağıdaki komutla kurabilirsiniz:
 
    ```bash
    npm install -g serve
    ```
 
-   Ardından frontend klasörünü başlatmak için:
+   Ardından web klasörüne girerek frontend'i başlatın:
 
    ```bash
-   serve frontend
+   cd web
+   serve .
    ```
+
+   Uygulama varsayılan olarak `http://localhost:3000` adresinde hizmet verecektir.
 
 6. Uygulamayı başlatın:
    ```bash
