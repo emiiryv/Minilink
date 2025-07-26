@@ -1,11 +1,10 @@
 import app from './app';
-import dotenv from 'dotenv';
+import { env } from './config/env';
 import prisma from './prismaClient';
 import redisClient from './utils/cacheClient';
 
-dotenv.config();
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(env.PORT);
 
 async function assertDbConnectionOk() {
   try {

@@ -4,11 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
-const dotenv_1 = __importDefault(require("dotenv"));
+const env_1 = require("./config/env");
 const prismaClient_1 = __importDefault(require("./prismaClient"));
 const cacheClient_1 = __importDefault(require("./utils/cacheClient"));
-dotenv_1.default.config();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(env_1.env.PORT);
 async function assertDbConnectionOk() {
     try {
         await prismaClient_1.default.$queryRaw `SELECT 1`;
