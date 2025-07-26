@@ -8,14 +8,29 @@ exports.loginUser = loginUser;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const client_1 = require("@prisma/client");
+const zod_1 = require("zod");
 const prisma = new client_1.PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'gizli-anahtar';
+const passwordSchema = zod_1.z
+    .string()
+    .min(8, 'Şifre en az 8 karakter olmalıdır.')
+    .regex(/[A-Z]/, 'Şifre en az bir büyük harf içermelidir.')
+    .regex(/[a-z]/, 'Şifre en az bir küçük harf içermelidir.')
+    .regex(/[0-9]/, 'Şifre en az bir rakam içermelidir.')
+    .regex(/[^A-Za-z0-9]/, 'Şifre en az bir özel karakter içermelidir.');
 async function registerUser(username, password) {
     const existingUser = await prisma.user.findUnique({
         where: { username },
     });
     if (existingUser) {
         throw { status: 400, message: 'Kullanıcı adı zaten kullanılıyor.' };
+    }
+    try {
+        passwordSchema.parse(password);
+    }
+    catch (err) {
+        const issues = err.issues.map((i) => i.message).join(', ');
+        throw { status: 400, message: `Şifre geçersiz: ${issues}` };
     }
     const hashedPassword = await bcrypt_1.default.hash(password, 10);
     const user = await prisma.user.create({
