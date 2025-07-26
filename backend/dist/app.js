@@ -14,12 +14,26 @@ const redirectRoute_1 = __importDefault(require("./routes/redirectRoute"));
 const rateLimiter_1 = __importDefault(require("./middleware/rateLimiter"));
 const linkController_1 = require("./controllers/linkController");
 dotenv_1.default.config();
+if (!process.env.CORS_ORIGIN) {
+    console.warn('⚠️ Warning: CORS_ORIGIN not set in .env. Defaulting to http://localhost:3000');
+}
 const app = (0, express_1.default)();
-// Middleware
+// Middleware: JSON parsing, security headers, CORS, rate limiting
 app.use(express_1.default.json());
-app.use((0, helmet_1.default)());
+app.use((0, helmet_1.default)({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: [],
+        },
+    },
+    referrerPolicy: { policy: 'no-referrer' }
+}));
 const corsOptions = {
-    origin: ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
 };

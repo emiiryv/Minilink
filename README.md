@@ -52,6 +52,7 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
    JWT_SECRET="gizli-anahtar"
    BASE_URL=http://localhost:3001
    PORT=3001
+   CORS_ORIGIN=http://localhost:3000
    ```
 
 3. Gerekli paketleri yükleyin:
