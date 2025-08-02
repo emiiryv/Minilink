@@ -95,6 +95,43 @@
     a:hover {
       text-decoration: underline;
     }
+
+    /* Güncelle modalı */
+    #date-modal {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      z-index: 9999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    #date-modal input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 8px;
+    }
+
+    #date-modal button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #date-modal button:hover {
+      opacity: 0.9;
+    }
+
+    #date-modal .actions {
+      text-align: right;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
@@ -132,14 +169,40 @@
             <th>Short Code</th>
             <th>Kullanıcı</th>
             <th>Tıklama</th>
-            <th>Sil</th>
+            <th>İşlemler</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </section>
   </div>
-
+<!-- Tarih seçici modal -->
+<div id="date-modal" style="
+display: none;
+position: fixed;
+top: 30%;
+left: 50%;
+transform: translateX(-50%);
+background: white;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 8px;
+z-index: 9999;
+box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+width: 300px;
+">
+    <h3>Sona Erme Tarihi Seç</h3>
+    <input type="datetime-local" id="expires-date"/>
+    <br />
+    <label style="display: block; margin: 10px 0;">
+      <input type="checkbox" id="clear-expire" />
+      Sona erme tarihini kaldır
+    </label>
+    <div class="actions">
+      <button onclick="cancelDate()">İptal</button>
+      <button onclick="confirmDate()">Onayla</button>
+    </div>
+  </div>
   <script>
     function logout() {
       localStorage.removeItem('token');

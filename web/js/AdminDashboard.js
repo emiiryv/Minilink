@@ -65,7 +65,10 @@ async function fetchLinks() {
         <td>${link.short_code}</td>
         <td>${link.user ? link.user.username : '-'}</td>
         <td>${link.click_count ?? 0}</td>
-        <td><button onclick="deleteLink(${link.id})">Sil</button></td>
+        <td>
+          <button onclick="deleteLink(${link.id})">Sil</button>
+          <button onclick="updateLink(${link.id}, '${link.original_url}', '${link.short_code}', '${link.expires_at || ''}')">Güncelle</button>
+        </td>
       `;
       linksTableBody.appendChild(row);
     });
@@ -121,4 +124,75 @@ async function deleteLink(linkId) {
   } catch (err) {
     console.error('Silme hatası:', err);
   }
+}
+
+let selectedLinkId = null;
+let updatePayload = {};
+
+async function updateLink(id, currentUrl, currentCode, currentExpires) {
+  const original_url = prompt('Yeni URL:', currentUrl);
+  if (original_url === null) return;
+
+  const short_code = prompt('Yeni short_code:', currentCode);
+  if (short_code === null) return;
+
+  // Expires modal için değerleri sakla
+  selectedLinkId = id;
+  updatePayload = {
+    original_url,
+    short_code,
+    expires_at: currentExpires || ''
+  };
+
+  document.getElementById('expires-date').value =
+  currentExpires ? new Date(currentExpires).toISOString().slice(0, 16) : '';
+  document.getElementById('date-modal').style.display = 'block';
+}
+
+async function confirmDate() {
+  const dateInput = document.getElementById('expires-date');
+  const clearCheckbox = document.getElementById('clear-expire');
+
+  let expires_at_input = dateInput.value;
+
+  // Eğer checkbox işaretliyse expires_at'i null yap
+  if (clearCheckbox.checked) {
+    expires_at_input = null;
+  } else if (expires_at_input === '') {
+    expires_at_input = null;
+  } else {
+    // Formatı tamamla (örnek: 2025-08-02T20:12 → 2025-08-02T20:12:00)
+    if (!expires_at_input.endsWith(':00')) {
+      expires_at_input += ':00';
+    }
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3001/api/admin/links/${selectedLinkId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...updatePayload,
+        expires_at: expires_at_input
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || 'Güncelleme başarısız');
+      return;
+    }
+
+    document.getElementById('date-modal').style.display = 'none';
+    await fetchLinks();
+  } catch (err) {
+    console.error('Güncelleme hatası:', err.message);
+  }
+}
+
+function cancelDate() {
+  document.getElementById('date-modal').style.display = 'none';
 }

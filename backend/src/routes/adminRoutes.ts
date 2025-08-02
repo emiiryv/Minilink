@@ -4,7 +4,8 @@ import {
   getAllLinks,
   getUserLinks,
   deleteUser,
-  deleteLink
+  deleteLink,
+  updateLink
 } from '../controllers/adminController';
 import auth from '../middleware/auth';
 import isAdmin from '../middleware/isAdmin';
@@ -19,5 +20,6 @@ router.get('/links', getAllLinks);
 router.get('/users/:id/links', getUserLinks);
 router.delete('/users/:id', deleteUser);
 router.delete('/links/:id', deleteLink);
+router.patch('/links/:id', updateLink);
 
 export default router;

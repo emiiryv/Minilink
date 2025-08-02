@@ -15,4 +15,5 @@ router.get('/links', adminController_1.getAllLinks);
 router.get('/users/:id/links', adminController_1.getUserLinks);
 router.delete('/users/:id', adminController_1.deleteUser);
 router.delete('/links/:id', adminController_1.deleteLink);
+router.patch('/links/:id', adminController_1.updateLink);
 exports.default = router;

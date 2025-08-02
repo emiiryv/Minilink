@@ -8,6 +8,7 @@ exports.getAllLinks = getAllLinks;
 exports.getUserLinks = getUserLinks;
 exports.deleteUser = deleteUser;
 exports.deleteLink = deleteLink;
+exports.updateLink = updateLink;
 const prismaClient_1 = __importDefault(require("../prismaClient"));
 // Tüm kullanıcıları getir
 async function getAllUsers(req, res) {
@@ -65,4 +66,31 @@ async function deleteLink(req, res) {
         where: { id: linkId },
     });
     res.json({ message: 'Link silindi' });
+}
+async function updateLink(req, res) {
+    const linkId = Number(req.params.id);
+    const { original_url, short_code, expires_at } = req.body;
+    try {
+        const dataToUpdate = {};
+        if (original_url)
+            dataToUpdate.original_url = original_url;
+        if (short_code)
+            dataToUpdate.short_code = short_code;
+        // expires_at: null olabilir, tarihse dönüştür
+        if (expires_at === null) {
+            dataToUpdate.expires_at = null;
+        }
+        else if (typeof expires_at === 'string' && expires_at.trim() !== '') {
+            dataToUpdate.expires_at = new Date(expires_at);
+        }
+        const updatedLink = await prismaClient_1.default.link.update({
+            where: { id: linkId },
+            data: dataToUpdate,
+        });
+        res.json(updatedLink);
+    }
+    catch (err) {
+        console.error('Link güncelleme hatası:', err);
+        res.status(400).json({ error: 'Link güncellenemedi' });
+    }
 }

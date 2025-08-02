@@ -66,3 +66,32 @@ export async function deleteLink(req: Request, res: Response) {
   });
   res.json({ message: 'Link silindi' });
 }
+
+export async function updateLink(req: Request, res: Response) {
+  const linkId = Number(req.params.id);
+  const { original_url, short_code, expires_at } = req.body;
+
+  try {
+    const dataToUpdate: any = {};
+
+    if (original_url) dataToUpdate.original_url = original_url;
+    if (short_code) dataToUpdate.short_code = short_code;
+
+    // expires_at: null olabilir, tarihse dönüştür
+    if (expires_at === null) {
+      dataToUpdate.expires_at = null;
+    } else if (typeof expires_at === 'string' && expires_at.trim() !== '') {
+      dataToUpdate.expires_at = new Date(expires_at);
+    }
+
+    const updatedLink = await prisma.link.update({
+      where: { id: linkId },
+      data: dataToUpdate,
+    });
+
+    res.json(updatedLink);
+  } catch (err) {
+    console.error('Link güncelleme hatası:', err);
+    res.status(400).json({ error: 'Link güncellenemedi' });
+  }
+}
