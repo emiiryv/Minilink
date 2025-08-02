@@ -39,7 +39,7 @@ export async function registerUser(username: string, password: string): Promise<
   return user;
 }
 
-export async function loginUser(username: string, password: string): Promise<{ token: string }> {
+export async function loginUser(username: string, password: string): Promise<{ token: string; user: User }> {
   const user = await prisma.user.findUnique({
     where: { username },
   });
@@ -58,5 +58,5 @@ export async function loginUser(username: string, password: string): Promise<{ t
     { expiresIn: '7d' }
   );
 
-  return { token };
+  return { token, user }; // ✅ user bilgisi de dönüyor
 }

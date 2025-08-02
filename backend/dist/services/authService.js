@@ -53,5 +53,5 @@ async function loginUser(username, password) {
         throw { status: 401, message: 'Geçersiz kullanıcı adı veya şifre.' };
     }
     const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, is_admin: user.is_admin }, JWT_SECRET, { expiresIn: '7d' });
-    return { token };
+    return { token, user }; // ✅ user bilgisi de dönüyor
 }

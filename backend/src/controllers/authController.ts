@@ -19,8 +19,16 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
   const { username, password } = req.body;
 
   try {
-    const result = await loginUser(username, password);
-    res.json(result);
+    const { token, user } = await loginUser(username, password);
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        is_admin: user.is_admin,
+      }
+    });
   } catch (err) {
     next(err);
   }

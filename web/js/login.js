@@ -7,12 +7,17 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
 
   try {
-    const data = await apiRequest('http://localhost:3001/api/auth/login', 'POST', { username, password });
+    const data = await apiRequest('/auth/login', 'POST', { username, password });
 
     if (data.token) {
       localStorage.setItem('token', data.token);
       alert('Giriş başarılı! Yönlendiriliyorsunuz...');
-      window.location.href = 'dashboard.html';
+
+      if (data.user?.is_admin) {
+        window.location.href = 'AdminDashboard.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
     } else {
       alert(data.message || 'Giriş başarısız.');
     }

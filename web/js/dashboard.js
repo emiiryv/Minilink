@@ -3,9 +3,24 @@ import { logout, isLoggedIn } from './auth.js';
 
 const BACKEND_ORIGIN = 'http://localhost:3001';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   if (!isLoggedIn()) {
     window.location.href = 'login.html';
+    return;
+  }
+
+  // 🔽 Admin kullanıcıyı yönlendir
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload?.is_admin) {
+        window.location.href = 'AdminDashboard.html';
+        return;
+      }
+    } catch (err) {
+      console.error('Token çözümleme hatası:', err);
+    }
   }
 
   // Global fonksiyonlar
@@ -18,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
       fetchUserLinks(e.target.value);
     });
   }
+
+  fetchUserLinks('created_at');
 });
 
 async function fetchUserLinks(sort = 'created_at') {
