@@ -13,4 +13,6 @@ router.post('/', auth_1.default, linkController_1.shortenUrl);
 router.get('/me', auth_1.default, linkController_1.getMyLinks);
 // Link silme (korumalı)
 router.delete('/:id', auth_1.default, linkController_1.deleteLink);
+// Kullanıcının kendi linki için QR kod üretme
+router.get('/:id/qrcode', auth_1.default, linkController_1.generateUserQrCode);
 exports.default = router;

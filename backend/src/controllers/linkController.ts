@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaClient, Link } from '@prisma/client';
 import { deleteLinkById, createShortLinkService, getOriginalUrlService, getUserLinks, incrementClickCount } from '../services/linkService';
 import { getFromCache, setToCache } from '../services/cacheService';
+import QRCode from 'qrcode';
 
 const prisma = new PrismaClient();
 require('dotenv').config();
@@ -94,5 +95,34 @@ export async function deleteLink(req: Request, res: Response): Promise<void> {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Silme işlemi başarısız' });
+  }
+}
+
+// Kullanıcının kendi linki için QR kod üretir
+export async function generateUserQrCode(req: Request, res: Response): Promise<void> {
+  const linkId = Number(req.params.id);
+  const userId = (req as any).user?.id;
+
+  try {
+    const link = await prisma.link.findFirst({
+      where: {
+        id: linkId,
+        user_id: userId,
+      },
+    });
+
+    if (!link) {
+      res.status(404).json({ error: 'Link bulunamadı veya yetkiniz yok' });
+      return;
+    }
+
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
+    const fullUrl = `${baseUrl}/${link.short_code}`;
+    const qrDataUrl = await QRCode.toDataURL(fullUrl);
+
+    res.status(200).json({ qr: qrDataUrl });
+  } catch (err) {
+    console.error('QR kod üretim hatası:', err);
+    res.status(500).json({ error: 'QR kod üretilemedi' });
   }
 }

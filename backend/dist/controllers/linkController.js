@@ -1,12 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMyLinks = getMyLinks;
 exports.shortenUrl = shortenUrl;
 exports.redirectToOriginalUrl = redirectToOriginalUrl;
 exports.deleteLink = deleteLink;
+exports.generateUserQrCode = generateUserQrCode;
 const client_1 = require("@prisma/client");
 const linkService_1 = require("../services/linkService");
 const cacheService_1 = require("../services/cacheService");
+const qrcode_1 = __importDefault(require("qrcode"));
 const prisma = new client_1.PrismaClient();
 require('dotenv').config();
 // Kullanıcının linklerini getir
@@ -87,5 +92,30 @@ async function deleteLink(req, res) {
     catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Silme işlemi başarısız' });
+    }
+}
+// Kullanıcının kendi linki için QR kod üretir
+async function generateUserQrCode(req, res) {
+    const linkId = Number(req.params.id);
+    const userId = req.user?.id;
+    try {
+        const link = await prisma.link.findFirst({
+            where: {
+                id: linkId,
+                user_id: userId,
+            },
+        });
+        if (!link) {
+            res.status(404).json({ error: 'Link bulunamadı veya yetkiniz yok' });
+            return;
+        }
+        const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
+        const fullUrl = `${baseUrl}/${link.short_code}`;
+        const qrDataUrl = await qrcode_1.default.toDataURL(fullUrl);
+        res.status(200).json({ qr: qrDataUrl });
+    }
+    catch (err) {
+        console.error('QR kod üretim hatası:', err);
+        res.status(500).json({ error: 'QR kod üretilemedi' });
     }
 }

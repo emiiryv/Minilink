@@ -4,6 +4,7 @@ import {
   redirectToOriginalUrl,
   getMyLinks,
   deleteLink,
+  generateUserQrCode,
 } from '../controllers/linkController';
 import authenticateToken from '../middleware/auth';
 
@@ -17,5 +18,8 @@ router.get('/me', authenticateToken, getMyLinks);
 
 // Link silme (korumalı)
 router.delete('/:id', authenticateToken, deleteLink);
+
+// Kullanıcının kendi linki için QR kod üretme
+router.get('/:id/qrcode', authenticateToken, generateUserQrCode);
 
 export default router;

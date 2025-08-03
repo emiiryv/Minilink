@@ -70,6 +70,7 @@ async function fetchUserLinks(sort = 'created_at') {
         <p><strong>Tıklama:</strong> ${link.click_count}</p>
         <p><strong>Oluşturulma:</strong> ${new Date(link.created_at).toLocaleDateString('tr-TR')}</p>
         ${link.expires_at ? `<p><strong>Sona Erme:</strong> ${new Date(link.expires_at).toLocaleString('tr-TR')}</p>` : ''}
+        <p><button onclick="showQrCode(${link.id})">QR Kodunu Göster</button></p>
         <button onclick="deleteLink(${link.id})">Sil</button>
         <hr/>
       `;
@@ -107,3 +108,64 @@ async function deleteLink(linkId) {
     alert('Sunucu hatası.');
   }
 }
+
+async function showQrCode(linkId) {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await fetch(`${BACKEND_ORIGIN}/api/links/${linkId}/qrcode`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      alert('QR kod alınamadı.');
+      return;
+    }
+
+    const data = await response.json();
+
+    let modal = document.getElementById('qr-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'qr-modal';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '9999';
+
+      modal.innerHTML = `
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+          <h3>QR Kodu</h3>
+          <img src="${data.qr}" alt="QR Kod" />
+          <br/><br/>
+          <button id="close-qr-btn">Kapat</button>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    } else {
+      modal.querySelector('img').src = data.qr;
+      modal.style.display = 'flex';
+    }
+
+    const closeBtn = modal.querySelector('#close-qr-btn');
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('QR kod alınırken hata oluştu.');
+  }
+}
+window.showQrCode = showQrCode;
