@@ -63,18 +63,21 @@ async function fetchUserLinks(sort = 'created_at') {
 
     // Backend tarafından sağlanan tam short_url kullanılmalı
     data.links.forEach(link => {
-      const el = document.createElement('div');
-      el.innerHTML = `
-        <p><strong>Original:</strong> <a href="${link.original_url}" target="_blank">${link.original_url}</a></p>
-        <p><strong>Short:</strong> <a href="${BACKEND_ORIGIN}/${link.short_code}" target="_blank">${BACKEND_ORIGIN}/${link.short_code}</a></p>
-        <p><strong>Tıklama:</strong> ${link.click_count}</p>
-        <p><strong>Oluşturulma:</strong> ${new Date(link.created_at).toLocaleDateString('tr-TR')}</p>
-        ${link.expires_at ? `<p><strong>Sona Erme:</strong> ${new Date(link.expires_at).toLocaleString('tr-TR')}</p>` : ''}
-        <p><button onclick="showQrCode(${link.id})">QR Kodunu Göster</button></p>
-        <button onclick="deleteLink(${link.id})">Sil</button>
-        <hr/>
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><a href="${link.original_url}" target="_blank">${link.original_url}</a></td>
+        <td><a href="${BACKEND_ORIGIN}/${link.short_code}" target="_blank">${BACKEND_ORIGIN}/${link.short_code}</a></td>
+        <td>${link.click_count}</td>
+        <td>${new Date(link.created_at).toLocaleString('tr-TR')}</td>
+        <td>${link.expires_at ? new Date(link.expires_at).toLocaleString('tr-TR') : '-'}</td>
+        <td>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <button onclick="showQrCode(${link.id})">QR</button>
+            <button onclick="deleteLink(${link.id})">Sil</button>
+          </div>
+        </td>
       `;
-      listContainer.appendChild(el);
+      listContainer.appendChild(row);
     });
 
   } catch (err) {

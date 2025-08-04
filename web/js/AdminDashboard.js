@@ -58,11 +58,12 @@ async function fetchLinks() {
     linksTableBody.innerHTML = '';
 
     links.forEach(link => {
+      const shortUrl = link.redirect_url || `http://localhost:3001/${link.short_code}`;
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${link.id}</td>
         <td><a href="${link.original_url}" target="_blank">${link.original_url}</a></td>
-        <td>${link.short_code}</td>
+        <td><a href="${shortUrl}" target="_blank">${link.short_code}</a></td>
         <td>${link.user ? link.user.username : '-'}</td>
         <td>${link.click_count ?? 0}</td>
         <td>

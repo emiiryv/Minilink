@@ -5,20 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard - Minilink</title>
   <link rel="stylesheet" href="./css/style.css" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 40px;
+      color: #333;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      border-radius: 8px;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 28px;
+      color: #2c3e50;
+      text-align: center;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .logout-container {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .logout-container button {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
-  <div class="container" style="padding-top: 70px;">
+  <div class="logout-container">
+    <button onclick="logout()">Çıkış Yap</button>
+  </div>
+
+  <div class="container">
     <h2>Linklerim</h2>
     <label for="sort-select">Sırala:</label>
     <select id="sort-select">
       <option value="created_at">En Yeni</option>
       <option value="click_count">En Çok Tıklanan</option>
     </select>
-    <div style="position: fixed; top: 10px; right: 20px; z-index: 1000;">
-      <button onclick="logout()">Çıkış Yap</button>
-    </div>
-    <div id="link-list"></div>
-    <p><a href="./index.html">Ana Sayfa</a></p>
+
+    <table id="link-table">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Orijinal URL</th>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Kısa Link</th>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Tıklama</th>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Oluşturulma</th>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Sona Erme</th>
+          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody id="link-list"></tbody>
+    </table>
+
+    <p style="margin-top: 20px;"><a href="./index.html">Ana Sayfa</a></p>
   </div>
 
   <script type="module" src="js/dashboard.js"></script>
