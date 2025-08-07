@@ -5,7 +5,8 @@ import redisClient from '../utils/cacheClient';
 import { Request } from 'express';
 import jwt from 'jsonwebtoken';
 
-const limiter = rateLimit({
+// Rate limiter applied to redirects (e.g., GET /:short_code) instead of link creation
+const redirectLimiter = rateLimit({
   windowMs: config.RATE_LIMIT_OPTIONS.windowMs,
   max: config.RATE_LIMIT_OPTIONS.max,
   standardHeaders: true,
@@ -32,4 +33,4 @@ const limiter = rateLimit({
   },
 });
 
-export default limiter;
+export default redirectLimiter;

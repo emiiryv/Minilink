@@ -41,7 +41,8 @@ const rate_limit_redis_1 = __importDefault(require("rate-limit-redis"));
 const config_1 = __importDefault(require("../config/config"));
 const cacheClient_1 = __importDefault(require("../utils/cacheClient"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const limiter = (0, express_rate_limit_1.default)({
+// Rate limiter applied to redirects (e.g., GET /:short_code) instead of link creation
+const redirectLimiter = (0, express_rate_limit_1.default)({
     windowMs: config_1.default.RATE_LIMIT_OPTIONS.windowMs,
     max: config_1.default.RATE_LIMIT_OPTIONS.max,
     standardHeaders: true,
@@ -66,4 +67,4 @@ const limiter = (0, express_rate_limit_1.default)({
         return `${ip}-${tokenId}`;
     },
 });
-exports.default = limiter;
+exports.default = redirectLimiter;
