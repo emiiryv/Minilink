@@ -8,6 +8,9 @@ exports.shortenUrl = shortenUrl;
 exports.redirectToOriginalUrl = redirectToOriginalUrl;
 exports.deleteLink = deleteLink;
 exports.generateUserQrCode = generateUserQrCode;
+const class_transformer_1 = require("class-transformer");
+const class_validator_1 = require("class-validator");
+const CreateLinkDto_1 = require("../dto/CreateLinkDto");
 const client_1 = require("@prisma/client");
 const linkService_1 = require("../services/linkService");
 const cacheService_1 = require("../services/cacheService");
@@ -32,14 +35,16 @@ async function getMyLinks(req, res, next) {
 }
 // Yeni kısa link oluşturma
 async function shortenUrl(req, res) {
-    const { originalUrl, expires_at } = req.body;
-    if (!originalUrl) {
-        res.status(400).json({ error: 'originalUrl is required' });
+    const dto = (0, class_transformer_1.plainToInstance)(CreateLinkDto_1.CreateLinkDto, req.body);
+    const errors = await (0, class_validator_1.validate)(dto);
+    if (errors.length > 0) {
+        res.status(400).json({ error: 'Geçersiz veri', details: errors });
         return;
     }
+    const { originalUrl, expires_at } = dto;
     try {
         const userId = req.user?.id || null;
-        const newLink = await (0, linkService_1.createShortLinkService)(originalUrl, userId, expires_at);
+        const newLink = await (0, linkService_1.createShortLinkService)(originalUrl, userId, expires_at ?? null);
         const shortUrl = `${process.env.BASE_URL}/${newLink.short_code}`;
         res.status(201).json({ ...newLink, short_url: shortUrl });
     }

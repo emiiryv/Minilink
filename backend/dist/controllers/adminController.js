@@ -10,6 +10,9 @@ exports.deleteUser = deleteUser;
 exports.deleteLink = deleteLink;
 exports.updateLink = updateLink;
 exports.getDashboardStats = getDashboardStats;
+const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+const UpdateLinkDto_1 = require("../dto/UpdateLinkDto");
 const prismaClient_1 = __importDefault(require("../prismaClient"));
 // Tüm kullanıcıları getir
 async function getAllUsers(req, res) {
@@ -72,19 +75,18 @@ async function deleteLink(req, res) {
 }
 async function updateLink(req, res) {
     const linkId = Number(req.params.id);
-    const { original_url, short_code, expires_at } = req.body;
     try {
-        const dataToUpdate = {};
-        if (original_url)
-            dataToUpdate.original_url = original_url;
-        if (short_code)
-            dataToUpdate.short_code = short_code;
-        // expires_at: null olabilir, tarihse dönüştür
-        if (expires_at === null) {
+        const dto = (0, class_transformer_1.plainToInstance)(UpdateLinkDto_1.UpdateLinkDto, req.body);
+        await (0, class_validator_1.validateOrReject)(dto);
+        const dataToUpdate = {
+            original_url: dto.original_url,
+            short_code: dto.short_code,
+        };
+        if (dto.expires_at === null) {
             dataToUpdate.expires_at = null;
         }
-        else if (typeof expires_at === 'string' && expires_at.trim() !== '') {
-            dataToUpdate.expires_at = new Date(expires_at);
+        else if (typeof dto.expires_at === 'string' && dto.expires_at.trim() !== '') {
+            dataToUpdate.expires_at = new Date(dto.expires_at);
         }
         const updatedLink = await prismaClient_1.default.link.update({
             where: { id: linkId },
@@ -94,7 +96,7 @@ async function updateLink(req, res) {
     }
     catch (err) {
         console.error('Link güncelleme hatası:', err);
-        res.status(400).json({ error: 'Link güncellenemedi' });
+        res.status(400).json({ error: 'Geçersiz veri. Lütfen formu kontrol edin.' });
     }
 }
 // Genel istatistikleri ve tarih verilerini getir

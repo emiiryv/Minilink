@@ -1,3 +1,6 @@
+import { validateOrReject } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
+import { UpdateLinkDto } from '../dto/UpdateLinkDto';
 import { Request, Response } from 'express';
 import prisma from '../prismaClient';
 
@@ -71,19 +74,20 @@ export async function deleteLink(req: Request, res: Response) {
 
 export async function updateLink(req: Request, res: Response) {
   const linkId = Number(req.params.id);
-  const { original_url, short_code, expires_at } = req.body;
 
   try {
-    const dataToUpdate: any = {};
+    const dto = plainToInstance(UpdateLinkDto, req.body);
+    await validateOrReject(dto);
 
-    if (original_url) dataToUpdate.original_url = original_url;
-    if (short_code) dataToUpdate.short_code = short_code;
+    const dataToUpdate: any = {
+      original_url: dto.original_url,
+      short_code: dto.short_code,
+    };
 
-    // expires_at: null olabilir, tarihse dönüştür
-    if (expires_at === null) {
+    if (dto.expires_at === null) {
       dataToUpdate.expires_at = null;
-    } else if (typeof expires_at === 'string' && expires_at.trim() !== '') {
-      dataToUpdate.expires_at = new Date(expires_at);
+    } else if (typeof dto.expires_at === 'string' && dto.expires_at.trim() !== '') {
+      dataToUpdate.expires_at = new Date(dto.expires_at);
     }
 
     const updatedLink = await prisma.link.update({
@@ -94,7 +98,7 @@ export async function updateLink(req: Request, res: Response) {
     res.json(updatedLink);
   } catch (err) {
     console.error('Link güncelleme hatası:', err);
-    res.status(400).json({ error: 'Link güncellenemedi' });
+    res.status(400).json({ error: 'Geçersiz veri. Lütfen formu kontrol edin.' });
   }
 }
 // Genel istatistikleri ve tarih verilerini getir

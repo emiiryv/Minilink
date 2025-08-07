@@ -1,3 +1,6 @@
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { CreateLinkDto } from '../dto/CreateLinkDto';
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient, Link } from '@prisma/client';
 import { deleteLinkById, createShortLinkService, getOriginalUrlService, getUserLinks, incrementClickCount } from '../services/linkService';
@@ -25,16 +28,19 @@ export async function getMyLinks(req: Request, res: Response, next: NextFunction
 
 // Yeni kısa link oluşturma
 export async function shortenUrl(req: Request, res: Response): Promise<void> {
-  const { originalUrl, expires_at } = req.body;
+  const dto = plainToInstance(CreateLinkDto, req.body);
+  const errors = await validate(dto);
 
-  if (!originalUrl) {
-    res.status(400).json({ error: 'originalUrl is required' });
+  if (errors.length > 0) {
+    res.status(400).json({ error: 'Geçersiz veri', details: errors });
     return;
   }
 
+  const { originalUrl, expires_at } = dto;
+
   try {
     const userId = (req as any).user?.id || null;
-    const newLink = await createShortLinkService(originalUrl, userId, expires_at);
+    const newLink = await createShortLinkService(originalUrl, userId, expires_at ?? null);
     const shortUrl = `${process.env.BASE_URL}/${newLink.short_code}`;
     res.status(201).json({ ...newLink, short_url: shortUrl });
   } catch (err) {

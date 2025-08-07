@@ -3,11 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = register;
 exports.login = login;
 const authService_1 = require("../services/authService");
+const class_transformer_1 = require("class-transformer");
+const class_validator_1 = require("class-validator");
+const RegisterUserDto_1 = require("../dto/RegisterUserDto");
+const LoginUserDto_1 = require("../dto/LoginUserDto");
 // Yeni kullanıcı kaydı işlemini yöneten controller fonksiyonu
 async function register(req, res, next) {
-    const { username, password } = req.body;
     try {
-        const user = await (0, authService_1.registerUser)(username, password);
+        const dto = (0, class_transformer_1.plainToInstance)(RegisterUserDto_1.RegisterUserDto, req.body);
+        await (0, class_validator_1.validateOrReject)(dto);
+        const user = await (0, authService_1.registerUser)(dto.username, dto.password);
         res.status(201).json({ message: 'Kayıt başarılı', user: { id: user.id, username: user.username } });
     }
     catch (err) {
@@ -16,9 +21,10 @@ async function register(req, res, next) {
 }
 // Kullanıcı girişi işlemini yöneten controller fonksiyonu
 async function login(req, res, next) {
-    const { username, password } = req.body;
     try {
-        const { token, user } = await (0, authService_1.loginUser)(username, password);
+        const dto = (0, class_transformer_1.plainToInstance)(LoginUserDto_1.LoginUserDto, req.body);
+        await (0, class_validator_1.validateOrReject)(dto);
+        const { token, user } = await (0, authService_1.loginUser)(dto.username, dto.password);
         res.json({
             token,
             user: {
