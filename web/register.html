@@ -4,17 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kayıt Ol - Minilink</title>
-  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <div class="container">
-    <h2>Hesap Oluştur</h2>
-    <form id="register-form">
-      <input type="text" id="username" placeholder="Kullanıcı Adı" required />
-      <input type="password" id="password" placeholder="Şifre" required />
-      <button type="submit">Kayıt Ol</button>
-    </form>
-    <p>Zaten hesabın var mı? <a href="login.html">Giriş yap</a></p>
+  <div class="login-page">
+    <div class="login-box">
+      <h2><img src="icons/logo.png" alt="Minilink Logo" style="height: 48px; vertical-align: middle; margin-right: 8px;" />Minilink</h2>
+      <p class="subtitle">Kayıt Ol</p>
+      <form id="register-form">
+        <input type="text" id="username" placeholder="Kullanıcı Adı" required />
+        <input type="password" id="password" placeholder="Şifre" required />
+        <button type="submit">Kayıt Ol</button>
+      </form>
+      <p>Zaten hesabın var mı? <a href="login.html">Giriş yap</a></p>
+    </div>
   </div>
 
   <script type="module" src="js/register.js"></script>

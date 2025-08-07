@@ -16,6 +16,15 @@ document.getElementById('shorten-form').addEventListener('submit', async (e) => 
   const isExpirySet = document.getElementById('set-expiry').checked;
   const expiresAt = document.getElementById('expires-at').value;
 
+  if (isExpirySet && expiresAt) {
+    const now = new Date();
+    const selectedDate = new Date(expiresAt);
+    if (selectedDate < now) {
+      resultDiv.innerHTML = `<p style="color:red;">Bitiş tarihi bugünden önce olamaz.</p>`;
+      return;
+    }
+  }
+
   const payload = { originalUrl };
 
   if (isExpirySet && expiresAt) {

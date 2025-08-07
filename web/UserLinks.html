@@ -5,115 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kullanıcı Linkleri - Minilink Admin</title>
   <link rel="stylesheet" href="./css/style.css" />
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f5f6fa;
-      margin: 0;
-      padding: 40px;
-      color: #333;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      border-radius: 8px;
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 28px;
-      color: #2c3e50;
-      text-align: center;
-    }
-    a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #f0f0f0;
-      font-weight: 600;
-    }
-    tr:hover {
-      background-color: #fafafa;
-    }
-    button {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #c0392b;
-    }
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-    .logout-container {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      z-index: 1000;
-    }
-    .logout-container button {
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-  </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <body>
-  <div class="logout-container">
-    <button onclick="logout()">Çıkış Yap</button>
+  <div class="sidebar">
+    <h1>Minilink Admin</h1>
+    <div class="menu-buttons">
+      <button onclick="showSection('dashboard')" class="menu-btn">
+        <img src="icons/stats.png" alt="Stats" width="20" />
+        Genel Görünüm
+      </button>
+      <button onclick="showSection('users')" class="menu-btn">
+        <img src="icons/users.png" alt="Users" width="20" />
+        Kullanıcılar
+      </button>
+      <button onclick="showSection('links')" class="menu-btn">
+        <img src="icons/links.png" alt="Links" width="20" />
+        Linkler
+      </button>
+    </div>
   </div>
 
-  <div class="container">
-    <h2>Kullanıcıya Ait Linkler</h2>
-    <p class="back-link"><a href="AdminDashboard.html">← Admin Paneline Dön</a></p>
-    
-    <table id="user-links-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Orijinal URL</th>
-          <th>Kısa Link</th>
-          <th>Tıklama</th>
-          <th>Oluşturulma</th>
-          <th>Sona Erme</th>
-          <th>Sil</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div class="main-content" style="margin-left: 260px;">
+    <div class="logout-container">
+      <button onclick="logout()">Çıkış Yap</button>
+    </div>
+
+    <section>
+      <h2>Kullanıcıya Ait Linkler</h2>
+      <p class="back-link"><a href="AdminDashboard.html">← Admin Paneline Dön</a></p>
+      <table id="user-links-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Orijinal URL</th>
+            <th>Kısa Link</th>
+            <th>Tıklama</th>
+            <th>Oluşturulma</th>
+            <th>Sona Erme</th>
+            <th>Sil</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
   </div>
 
+</section>
   <script>
     function logout() {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
     }
   </script>
-
+  <script>
+    function showSection(section) {
+      window.location.href = 'AdminDashboard.html#' + section;
+    }
+  </script>
   <script src="js/UserLinks.js"></script>
 </body>
 </html>

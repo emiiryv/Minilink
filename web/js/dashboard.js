@@ -72,8 +72,8 @@ async function fetchUserLinks(sort = 'created_at') {
         <td>${link.expires_at ? new Date(link.expires_at).toLocaleString('tr-TR') : '-'}</td>
         <td>
           <div style="display: flex; flex-direction: column; gap: 6px;">
-            <button onclick="showQrCode(${link.id})">QR</button>
-            <button onclick="deleteLink(${link.id})">Sil</button>
+            <button class="btn-qr" onclick="showQrCode(${link.id})">QR</button>
+            <button class="btn" onclick="deleteLink(${link.id})">Sil</button>
           </div>
         </td>
       `;

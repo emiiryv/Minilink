@@ -77,7 +77,7 @@ Minilink, URL kısaltma servislerinin nasıl çalıştığını öğrenmek istey
 
    ```bash
    cd web
-   serve .
+   npx serve .
    ```
 
    Uygulama varsayılan olarak `http://localhost:3000` adresinde hizmet verecektir.

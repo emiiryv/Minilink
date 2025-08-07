@@ -2,14 +2,13 @@ const tableBody = document.querySelector('#user-links-table tbody');
 const token = localStorage.getItem('token');
 
 // URL parametresinden kullanıcı ID'sini al
-const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get('id');
-
-if (!userId) {
-  alert('Kullanıcı ID bulunamadı!');
-} else {
-  fetchUserLinks(userId);
+const userId = new URLSearchParams(window.location.search).get('id');
+if (!userId || isNaN(Number(userId))) {
+  alert('Geçersiz kullanıcı ID');
+  throw new Error('Geçersiz kullanıcı ID');
 }
+
+fetchUserLinks(userId);
 
 async function fetchUserLinks(id) {
   try {

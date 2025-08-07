@@ -4,66 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard - Minilink</title>
-  <link rel="stylesheet" href="./css/style.css" />
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f5f6fa;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background-color: white;
       padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+
+    .header img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .header h1 {
+      font-size: 26px;
       color: #333;
     }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      border-radius: 8px;
-    }
-    h2 {
-      margin-top: 0;
-      font-size: 28px;
-      color: #2c3e50;
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 20px;
       text-align: center;
     }
-    a {
-      color: #3498db;
-      text-decoration: none;
+
+    .sort-bar {
+      text-align: right;
+      margin-bottom: 10px;
     }
-    a:hover {
-      text-decoration: underline;
-    }
-    .logout-container {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      z-index: 1000;
-    }
-    .logout-container button {
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #c0392b;
-    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+      overflow-x: auto;
     }
 
     th, td {
@@ -73,45 +74,121 @@
     }
 
     th {
-      background-color: #f0f0f0;
+      background-color: #ffe5d0;
+      color: #333;
       font-weight: 600;
     }
 
     tr:hover {
-      background-color: #f9f9f9;
+      background-color: #fff3ea;
+    }
+
+    .btn {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #ff7875;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-qr {
+      background-color: #ffa940;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-qr:hover {
+      background-color: #fa8c16;
+    }
+
+    .logout-btn {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      padding: 8px 12px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      table {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="logout-container">
-    <button onclick="logout()">Çıkış Yap</button>
-  </div>
+  <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
 
-  <div class="container">
-    <h2>Linklerim</h2>
-    <label for="sort-select">Sırala:</label>
-    <select id="sort-select">
-      <option value="created_at">En Yeni</option>
-      <option value="click_count">En Çok Tıklanan</option>
-    </select>
+  <div class="card">
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button onclick="window.location.href='index.html'" style="padding: 6px 12px; background-color: #444; color: white; border: none; border-radius: 5px; cursor: pointer;">Ana Sayfa</button>
+    </div>
+    <div class="header">
+      <img src="icons/logo.png" alt="logo">
+      <h1>Minilink</h1>
+    </div>
 
-    <table id="link-table">
+    <div class="section-title">Linklerim</div>
+
+    <div class="sort-bar">
+      <label for="sort-select">Sırala:</label>
+      <select id="sort-select">
+        <option>En Yeni</option>
+        <option>En Eski</option>
+        <option>En Çok Tıklanan</option>
+      </select>
+    </div>
+
+    <table>
       <thead>
         <tr>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Orijinal URL</th>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Kısa Link</th>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Tıklama</th>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Oluşturulma</th>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">Sona Erme</th>
-          <th style="text-align: left; padding: 8px; background-color: #f0f0f0;">İşlemler</th>
+          <th>Orijinal URL</th>
+          <th>Kısa Link</th>
+          <th>Tıklama</th>
+          <th>Oluşturulma</th>
+          <th>Sona Erme</th>
+          <th>İşlemler</th>
         </tr>
       </thead>
-      <tbody id="link-list"></tbody>
+      <tbody id="link-list">
+        <!-- JavaScript ile doldurulacak -->
+      </tbody>
     </table>
-
-    <p style="margin-top: 20px;"><a href="./index.html">Ana Sayfa</a></p>
   </div>
 
+  <script>
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
+  </script>
+</script>
   <script type="module" src="js/dashboard.js"></script>
 </body>
 </html>

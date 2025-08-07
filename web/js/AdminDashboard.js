@@ -5,6 +5,7 @@ const token = localStorage.getItem('token');
 window.addEventListener('DOMContentLoaded', async () => {
   await fetchUsers();
   await fetchLinks();
+  await fetchStatsAndDrawCharts(); // 🔽 yeni eklendi
 });
 
 async function fetchUsers() {
@@ -29,8 +30,7 @@ async function fetchUsers() {
       row.innerHTML = `
         <td>${user.id}</td>
         <td>${user.username}</td>
-        <td>${user.is_admin ? '✅' : '❌'}</td>
-        <td><a href="UserLinks.html?id=${user.id}">Görüntüle</a></td>
+        <td><a href="./UserLinks?id=${user.id}">Görüntüle</a></td>
         <td><button onclick="deleteUser(${user.id})">Sil</button></td>
       `;
       usersTableBody.appendChild(row);
@@ -66,6 +66,7 @@ async function fetchLinks() {
         <td><a href="${shortUrl}" target="_blank">${link.short_code}</a></td>
         <td>${link.user ? link.user.username : '-'}</td>
         <td>${link.click_count ?? 0}</td>
+        <td>${link.expires_at ? new Date(link.expires_at).toLocaleString('tr-TR') : '-'}</td>
         <td>
           <button onclick="deleteLink(${link.id})">Sil</button>
           <button onclick="updateLink(${link.id}, '${link.original_url}', '${link.short_code}', '${link.expires_at || ''}')">Güncelle</button>
@@ -147,6 +148,7 @@ async function updateLink(id, currentUrl, currentCode, currentExpires) {
 
   document.getElementById('expires-date').value =
   currentExpires ? new Date(currentExpires).toISOString().slice(0, 16) : '';
+  document.getElementById('expires-date').min = new Date().toISOString().slice(0, 16);
   document.getElementById('date-modal').style.display = 'block';
 }
 
@@ -165,6 +167,11 @@ async function confirmDate() {
     // Formatı tamamla (örnek: 2025-08-02T20:12 → 2025-08-02T20:12:00)
     if (!expires_at_input.endsWith(':00')) {
       expires_at_input += ':00';
+    }
+    const now = new Date().toISOString();
+    if (expires_at_input < now) {
+      alert('Geçmiş tarih seçilemez.');
+      return;
     }
   }
 
@@ -196,4 +203,123 @@ async function confirmDate() {
 
 function cancelDate() {
   document.getElementById('date-modal').style.display = 'none';
+}
+
+
+// ... diğer fetchUsers, fetchLinks, deleteUser, deleteLink, updateLink, confirmDate, cancelDate fonksiyonları değişmedi ...
+
+function aggregateByDate(dateArray) {
+  const counts = {};
+  dateArray.forEach(dt => {
+    const date = new Date(dt).toISOString().split('T')[0];
+    counts[date] = (counts[date] || 0) + 1;
+  });
+  return Object.entries(counts).map(([date, count]) => ({ date, count }));
+}
+
+async function fetchStatsAndDrawCharts() {
+  try {
+    const res = await fetch('http://localhost:3001/api/admin/stats', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || 'İstatistik verisi alınamadı');
+    }
+
+    const data = await res.json();
+    console.log("Gelen istatistik verisi:", data);
+
+    if (!data || !data.user_creation_dates || !data.link_creation_dates) {
+      console.error("İstatistik verisi eksik:", data);
+      return;
+    }
+
+    // Toplam sayılar
+    const totalUsersElem = document.getElementById('total-users');
+    if (totalUsersElem) totalUsersElem.textContent = data.total_users;
+
+    const totalLinksElem = document.getElementById('total-links');
+    if (totalLinksElem) totalLinksElem.textContent = data.total_links;
+
+    // Grafikler
+    const userChartCtx = document.getElementById('userChart').getContext('2d');
+    const linkChartCtx = document.getElementById('linkChart').getContext('2d');
+
+    const userStats = aggregateByDate(data.user_creation_dates);
+    const linkStats = aggregateByDate(data.link_creation_dates);
+
+    new Chart(userChartCtx, {
+      type: 'line',
+      data: {
+        labels: userStats.map(item => item.date),
+        datasets: [{
+          label: 'Kullanıcılar',
+          data: userStats.map(item => item.count),
+          borderColor: '#f39c12',
+          backgroundColor: 'rgba(243, 156, 18, 0.2)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(linkChartCtx, {
+      type: 'line',
+      data: {
+        labels: linkStats.map(item => item.date),
+        datasets: [{
+          label: 'Linkler',
+          data: linkStats.map(item => item.count),
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.2)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error('İstatistik hatası:', err.message);
+  }
 }

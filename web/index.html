@@ -4,44 +4,164 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Minilink - URL Kısaltıcı</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page-container {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+    }
+
+    .login-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .logo-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .dashboard-card {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .dashboard-card h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form input[type="url"],
+    .form input[type="datetime-local"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .form button {
+      background-color: #ff6f3c;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .form button:hover {
+      background-color: #e65b28;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      gap: 10px;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+
+    .link-button {
+      display: inline-block;
+      margin-top: 20px;
+      color: #2c3e50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link-button:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const expiresInput = document.getElementById('expires-at');
+      if (expiresInput) {
+        const now = new Date();
+        const iso = now.toISOString().slice(0, 16); // Format: 'YYYY-MM-DDTHH:mm'
+        expiresInput.min = iso;
+      }
+    });
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>🔗 Minilink</h1>
-    <form id="shorten-form">
-      <input type="url" id="original-url" placeholder="URL yapıştır..." required />
-      <div style="margin-top: 10px;">
-        <label>
+  <div class="page-container">
+    <div class="login-header">
+      <img src="icons/logo.png" alt="Minilink Logo" class="logo-icon" />
+      <h1 class="logo-title">Minilink</h1>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>URL Kısalt</h2>
+      <form id="shorten-form" class="form">
+        <input type="url" id="original-url" placeholder="URL yapıştır..." required />
+        <label class="checkbox-label">
           <input type="checkbox" id="set-expiry" />
           Süreli link olsun
         </label>
+        <div id="expiry-date-container" style="display: none;">
+          <label for="expires-at">Bitiş Tarihi:</label>
+          <input type="datetime-local" id="expires-at" name="expires_at" min="" />
+        </div>
+        <button type="submit">Kısalt</button>
+      </form>
+      <div id="result" style="margin-top: 20px;"></div>
+      <div style="margin-top: 20px;">
+        <a href="dashboard.html" class="link-button">Linklerim</a>
       </div>
-      <div style="margin-top: 10px; display: none;" id="expiry-date-container">
-        <label for="expires-at">Bitiş Tarihi:</label>
-        <input type="datetime-local" id="expires-at" name="expires_at" />
-      </div>
-      <button type="submit">Kısalt</button>
-    </form>
-    <div id="result" style="margin-top: 20px;"></div>
-    <div style="margin-top: 20px;">
-      <a href="dashboard.html" style="text-decoration: none;">
-        <button type="button">Linklerim</button>
-      </a>
     </div>
   </div>
 
   <script type="module" src="js/script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checkbox = document.getElementById('set-expiry');
+      const dateContainer = document.getElementById('expiry-date-container');
+      checkbox.addEventListener('change', () => {
+        dateContainer.style.display = checkbox.checked ? 'block' : 'none';
+      });
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const checkbox = document.getElementById('set-expiry');
-    const dateContainer = document.getElementById('expiry-date-container');
-
-    checkbox.addEventListener('change', () => {
-      dateContainer.style.display = checkbox.checked ? 'block' : 'none';
+      const form = document.getElementById('shorten-form');
+      form.addEventListener('submit', function (e) {
+        const expiryInput = document.getElementById('expires-at');
+        if (expiryInput && expiryInput.value) {
+          const selectedTime = new Date(expiryInput.value);
+          const now = new Date();
+          if (selectedTime < now) {
+            e.preventDefault();
+            alert("Bitiş tarihi geçmiş bir zaman olamaz.");
+          }
+        }
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>

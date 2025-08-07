@@ -5,152 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🔒 Admin Paneli - Minilink</title>
   <link rel="stylesheet" href="./css/style.css" />
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f5f6fa;
-    }
-
-    .logout-container {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      z-index: 1000;
-    }
-
-    .logout-container button {
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .main-container {
-      max-width: 1000px;
-      margin: 80px auto 60px auto;
-      padding: 0 20px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 36px;
-      margin-bottom: 60px;
-      color: #2c3e50;
-    }
-
-    section {
-      margin-bottom: 50px;
-    }
-
-    h2 {
-      font-size: 24px;
-      margin-bottom: 16px;
-      color: #34495e;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    }
-
-    th, td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f0f0f0;
-      font-weight: 600;
-    }
-
-    tr:hover {
-      background-color: #f9f9f9;
-    }
-
-    button {
-      background-color: #ff4d4f;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #ff7875;
-    }
-
-    a {
-      color: #3498db;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* Güncelle modalı */
-    #date-modal {
-      display: none;
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      z-index: 9999;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    #date-modal input {
-      width: 100%;
-      padding: 6px;
-      margin-top: 8px;
-    }
-
-    #date-modal button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    #date-modal button:hover {
-      opacity: 0.9;
-    }
-
-    #date-modal .actions {
-      text-align: right;
-      margin-top: 12px;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-  <div class="logout-container">
-    <button onclick="logout()">Çıkış Yap</button>
+  <div class="sidebar">
+    <h1>Minilink Admin</h1>
+    <div class="menu-buttons">
+      <button onclick="showSection('dashboard')" class="menu-btn">
+        <img src="icons/stats.png" alt="Stats" width="20" />
+        Genel Görünüm
+      </button>
+      <button onclick="showSection('users')" class="menu-btn">
+        <img src="icons/users.png" alt="Users" width="20" />
+        Kullanıcılar
+      </button>
+      <button onclick="showSection('links')" class="menu-btn">
+        <img src="icons/links.png" alt="Links" width="20" />
+        Linkler
+      </button>
+    </div>
   </div>
 
-  <div class="main-container">
-    <h1>🔒 Admin Paneli</h1>
+  <div class="main-content" style="margin-left: 260px;">
+    <div class="logout-container">
+      <button onclick="logout()">Çıkış Yap</button>
+    </div>
 
-    <section>
+    <section id="dashboard-section" style="display: block;">
+      <h2>Genel Görünüm</h2>
+      <p>Toplam Link Sayısı: <span id="total-links">0</span></p>
+      <p>Toplam Kullanıcı Sayısı: <span id="total-users">0</span></p>
+      <div>
+        <h3>Link Oluşturulma Grafiği</h3>
+        <canvas id="linkChart" width="400" height="200"></canvas>
+        <h3 style="margin-top: 40px;">Kullanıcı Oluşturulma Grafiği</h3>
+        <canvas id="userChart" width="400" height="200"></canvas>
+      </div>
+    </section>
+
+    <section id="users-section" style="display: none;">
       <h2>Kullanıcılar</h2>
       <table id="users-table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Kullanıcı Adı</th>
-            <th>Admin mi?</th>
             <th>Linkleri Gör</th>
             <th>Sil</th>
           </tr>
@@ -159,7 +59,7 @@
       </table>
     </section>
 
-    <section>
+    <section id="links-section" style="display: none;">
       <h2>Tüm Linkler</h2>
       <table id="links-table">
         <thead>
@@ -169,6 +69,7 @@
             <th>Short Code</th>
             <th>Kullanıcı</th>
             <th>Tıklama</th>
+            <th>Sona Erme</th>
             <th>İşlemler</th>
           </tr>
         </thead>
@@ -176,21 +77,8 @@
       </table>
     </section>
   </div>
-<!-- Tarih seçici modal -->
-<div id="date-modal" style="
-display: none;
-position: fixed;
-top: 30%;
-left: 50%;
-transform: translateX(-50%);
-background: white;
-padding: 20px;
-border: 1px solid #ccc;
-border-radius: 8px;
-z-index: 9999;
-box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-width: 300px;
-">
+
+  <div id="date-modal" style="display: none; position: fixed; top: 30%; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border: 1px solid #ccc; border-radius: 8px; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.15); width: 300px;">
     <h3>Sona Erme Tarihi Seç</h3>
     <input type="datetime-local" id="expires-date"/>
     <br />
@@ -198,16 +86,42 @@ width: 300px;
       <input type="checkbox" id="clear-expire" />
       Sona erme tarihini kaldır
     </label>
-    <div class="actions">
+    <div class="actions" style="text-align: right; margin-top: 12px;">
       <button onclick="cancelDate()">İptal</button>
       <button onclick="confirmDate()">Onayla</button>
     </div>
   </div>
+
   <script>
     function logout() {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
     }
+
+    function showSection(section) {
+      // Tüm section'ları gizle
+      document.getElementById('dashboard-section').style.display = 'none';
+      document.getElementById('users-section').style.display = 'none';
+      document.getElementById('links-section').style.display = 'none';
+
+      // Seçilen section'ı göster
+      const targetId = `${section}-section`;
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.style.display = 'block';
+      }
+
+      // Eğer dashboard seçildiyse grafik yeniden çizilsin
+      if (section === 'dashboard') {
+        fetchStatsAndDrawCharts();
+      }
+    }
+
+    window.onload = () => {
+      const hash = window.location.hash?.substring(1); // "#users" → "users"
+      const section = (hash === 'dashboard' || hash === 'users' || hash === 'links') ? hash : 'dashboard';
+      showSection(section);
+    };
   </script>
   <script src="js/AdminDashboard.js"></script>
 </body>

@@ -3,7 +3,9 @@ import prisma from '../prismaClient';
 
 // Tüm kullanıcıları getir
 export async function getAllUsers(req: Request, res: Response) {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    where: { is_admin: false },
+  });
   res.json(users);
 }
 
@@ -93,5 +95,34 @@ export async function updateLink(req: Request, res: Response) {
   } catch (err) {
     console.error('Link güncelleme hatası:', err);
     res.status(400).json({ error: 'Link güncellenemedi' });
+  }
+}
+// Genel istatistikleri ve tarih verilerini getir
+export async function getDashboardStats(req: Request, res: Response) {
+  try {
+    const total_users = await prisma.user.count({
+      where: { is_admin: false }
+    });
+
+    const total_links = await prisma.link.count();
+
+    const users = await prisma.user.findMany({
+      where: { is_admin: false },
+      select: { created_at: true }
+    });
+
+    const links = await prisma.link.findMany({
+      select: { created_at: true }
+    });
+
+    res.json({
+      total_users,
+      total_links,
+      user_creation_dates: users.map(u => u.created_at),
+      link_creation_dates: links.map(l => l.created_at)
+    });
+  } catch (err) {
+    console.error('İstatistik verisi çekilemedi:', err);
+    res.status(500).json({ error: 'İstatistik verisi alınamadı' });
   }
 }

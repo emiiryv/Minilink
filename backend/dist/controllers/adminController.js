@@ -9,10 +9,13 @@ exports.getUserLinks = getUserLinks;
 exports.deleteUser = deleteUser;
 exports.deleteLink = deleteLink;
 exports.updateLink = updateLink;
+exports.getDashboardStats = getDashboardStats;
 const prismaClient_1 = __importDefault(require("../prismaClient"));
 // Tüm kullanıcıları getir
 async function getAllUsers(req, res) {
-    const users = await prismaClient_1.default.user.findMany();
+    const users = await prismaClient_1.default.user.findMany({
+        where: { is_admin: false },
+    });
     res.json(users);
 }
 // Tüm linkleri getir (kullanıcı bilgisiyle birlikte)
@@ -92,5 +95,31 @@ async function updateLink(req, res) {
     catch (err) {
         console.error('Link güncelleme hatası:', err);
         res.status(400).json({ error: 'Link güncellenemedi' });
+    }
+}
+// Genel istatistikleri ve tarih verilerini getir
+async function getDashboardStats(req, res) {
+    try {
+        const total_users = await prismaClient_1.default.user.count({
+            where: { is_admin: false }
+        });
+        const total_links = await prismaClient_1.default.link.count();
+        const users = await prismaClient_1.default.user.findMany({
+            where: { is_admin: false },
+            select: { created_at: true }
+        });
+        const links = await prismaClient_1.default.link.findMany({
+            select: { created_at: true }
+        });
+        res.json({
+            total_users,
+            total_links,
+            user_creation_dates: users.map(u => u.created_at),
+            link_creation_dates: links.map(l => l.created_at)
+        });
+    }
+    catch (err) {
+        console.error('İstatistik verisi çekilemedi:', err);
+        res.status(500).json({ error: 'İstatistik verisi alınamadı' });
     }
 }
