@@ -27,7 +27,9 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || 'Sunucu hatası');
+      const error = new Error(result.message || result.error || 'Sunucu hatası');
+      error.response = result;
+      throw error;
     }
 
     return result;

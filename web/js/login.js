@@ -22,7 +22,13 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       alert(data.message || 'Giriş başarısız.');
     }
   } catch (error) {
-    alert('Sunucuya ulaşılamadı.');
+    const message = error?.response?.message || error?.message || 'Sunucuya ulaşılamadı.';
+    const errorMessageEl = document.getElementById('error-message');
+    if (errorMessageEl) {
+      errorMessageEl.textContent = message;
+    } else {
+      alert(message);
+    }
     console.error(error);
   }
 });

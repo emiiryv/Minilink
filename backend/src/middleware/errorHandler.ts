@@ -12,7 +12,7 @@ export default function errorHandler(
   next: NextFunction
 ): void {
   let status = err.status || 500;
-  let message = 'Sunucu hatası';
+  let message = err.message || 'Sunucu hatası';
 
   // Prisma hata yönetimi
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
