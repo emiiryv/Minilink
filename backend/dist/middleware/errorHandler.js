@@ -12,7 +12,12 @@ function errorHandler(err, req, res, next) {
     // Prisma hata yönetimi
     if (err instanceof client_1.Prisma.PrismaClientKnownRequestError) {
         status = 400;
-        message = `Veritabanı hatası: ${err.message}`;
+        if (err.code === 'P2002') {
+            message = `Bu kısa link zaten mevcut. Lütfen farklı bir short_code girin.`;
+        }
+        else {
+            message = `Veritabanı hatası: ${err.message}`;
+        }
     }
     // Geliştirme ortamında detaylı log
     if (process.env.NODE_ENV !== 'production') {

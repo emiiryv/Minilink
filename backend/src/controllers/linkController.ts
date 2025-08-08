@@ -15,7 +15,7 @@ export async function getMyLinks(req: Request, res: Response, next: NextFunction
   try {
     const sortField = req.query.sort === 'click_count' ? 'click_count' : 'created_at';
     const links = await prisma.link.findMany({
-      where: { user_id: (req as any).user.id },
+      where: { user_id: req.user?.id },
       orderBy: {
         [sortField as string]: 'desc',
       },
@@ -39,7 +39,7 @@ export async function shortenUrl(req: Request, res: Response): Promise<void> {
   const { originalUrl, expires_at } = dto;
 
   try {
-    const userId = (req as any).user?.id || null;
+    const userId = req.user?.id || null;
     const newLink = await createShortLinkService(originalUrl, userId, expires_at ?? null);
     const shortUrl = `${process.env.BASE_URL}/${newLink.short_code}`;
     res.status(201).json({ ...newLink, short_url: shortUrl });
@@ -88,7 +88,11 @@ export async function redirectToOriginalUrl(req: Request, res: Response): Promis
 // Link silme
 export async function deleteLink(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
-  const userId = (req as any).user.id;
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({ error: 'Kimlik doğrulama gerekli.' });
+    return;
+  }
 
   try {
     const result = await deleteLinkById(id, userId);
@@ -107,7 +111,7 @@ export async function deleteLink(req: Request, res: Response): Promise<void> {
 // Kullanıcının kendi linki için QR kod üretir
 export async function generateUserQrCode(req: Request, res: Response): Promise<void> {
   const linkId = Number(req.params.id);
-  const userId = (req as any).user?.id;
+  const userId = req.user?.id;
 
   try {
     const link = await prisma.link.findFirst({

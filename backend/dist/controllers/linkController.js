@@ -22,7 +22,7 @@ async function getMyLinks(req, res, next) {
     try {
         const sortField = req.query.sort === 'click_count' ? 'click_count' : 'created_at';
         const links = await prisma.link.findMany({
-            where: { user_id: req.user.id },
+            where: { user_id: req.user?.id },
             orderBy: {
                 [sortField]: 'desc',
             },
@@ -85,7 +85,11 @@ async function redirectToOriginalUrl(req, res) {
 // Link silme
 async function deleteLink(req, res) {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(401).json({ error: 'Kimlik doğrulama gerekli.' });
+        return;
+    }
     try {
         const result = await (0, linkService_1.deleteLinkById)(id, userId);
         if (result === 0) {
