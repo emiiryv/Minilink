@@ -7,6 +7,7 @@ import {
 } from '../models/linkModel';
 import generateShortCode from '../utils/generateShortCode';
 import { Link } from '@prisma/client';
+import { deleteFromCache } from './cacheService';
 
 export async function createShortLinkService(
   originalUrl: string,
@@ -36,7 +37,18 @@ export async function getUserLinks(userId: number): Promise<(Link & { short_url:
 }
 
 export async function deleteLinkById(linkId: string, userId: number): Promise<number> {
-  return await deleteLink(linkId, userId);
+  const link = await getLinksByUserId(userId).then(links =>
+    links.find(l => l.id === Number(linkId))
+  );
+
+  if (!link) return 0;
+
+  await deleteLink(linkId, userId);
+
+  // Redis cache cleanup
+  await deleteFromCache(link.short_code);
+
+  return 1;
 }
 
 export { incrementClickCount };
